@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+    </head>
+    <body>
+        <!--NAVBAR-->
+        <nav th:fragment="header" class="navbar navbar-expand-sm navbar-dark bg-dark">
+            <a href="#" class="navbar-brand mb-0 h1">
+                <img class="d-inline-block align-top ms-3" th:src="@{/images/favicon-white.png}" alt="logo" height="40">
+            </a>
+            <button type="button" data-bs-toggle="collapse" 
+                data-bs-target="#navbarNav" class="navbar-toggler bg-dark"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toogle navigations">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item active">
+                        <a href="#" class="nav-link">
+                            <strong>OPÇÃO</strong>
+                        </a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ms-auto align-middle me-3">
+                    <li class="nav-item active">
+                        <form class="form-inline" sec:authorize="!isAuthenticated()">
+                            <div class="btn-group">
+                                <div class="me-2">
+                                    <a class="btn btn-success" role="button" th:href="@{/login}">Login</a>
+                                </div>
+                                <div class="">
+                                    <a class="btn btn-primary" role="button"
+                                       href="#">Cadastrar-se</a>
+                                </div>
+                            </div>
+                        </form>
+                        <form th:action="@{/logout}" method="POST" sec:authorize="isAuthenticated()"
+                            class="form-inline">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-light">
+                                    <i class="fas fa-user"></i><span class="" sec:authentication="name">usuario@gmail.com</span>
+                                </button>
+                                <button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split"
+                                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                </button>
+                                <div class="dropdown-menu">
+                                    <button type="submit" class="dropdown-item">Sair</button>
+                                </div>
+                            </div>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </body>
+</html>
