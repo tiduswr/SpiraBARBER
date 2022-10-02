@@ -12,8 +12,26 @@ public class ExceptionController {
     public ModelAndView usuarioNaoEncontradoExcessao(UsuarioNotFoundException e){
         ModelAndView error = new ModelAndView("error");
         error.addObject("status", HttpStatus.NOT_FOUND.value());
-        error.addObject("error", "O usuário não foi encontrado!");
-        error.addObject("message", e.getMessage());
+        error.addObject("errorTitle", "Usuário não encontrado");
+        error.addObject("errorDescription", e.getMessage());
+        return error;
+    }
+
+    @ExceptionHandler(SelfExclusionException.class)
+    public ModelAndView tentativaDeAutoExclusaoExcessao(SelfExclusionException e){
+        ModelAndView error = new ModelAndView("error");
+        error.addObject("status", HttpStatus.FORBIDDEN.value());
+        error.addObject("errorTitle", "Tentativa de auto exclusão");
+        error.addObject("errorDescription", e.getMessage());
+        return error;
+    }
+
+    @ExceptionHandler(ClienteHasMoreThanOnePerfilException.class)
+    public ModelAndView clientePossuiMaisDeUmPerfilExcessao(ClienteHasMoreThanOnePerfilException e){
+        ModelAndView error = new ModelAndView("error");
+        error.addObject("status", HttpStatus.FORBIDDEN.value());
+        error.addObject("errorTitle", "Cliente com mais de um perfil");
+        error.addObject("errorDescription", e.getMessage());
         return error;
     }
 

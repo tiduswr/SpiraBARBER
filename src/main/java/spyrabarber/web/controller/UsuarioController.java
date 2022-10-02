@@ -1,6 +1,8 @@
 package spyrabarber.web.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -43,6 +45,13 @@ public class UsuarioController {
         return "redirect:/users/user-manager";
     }
 
+    @GetMapping("/excluir/{id}")
+    public String deleteUser(@PathVariable("id") Long id, RedirectAttributes attr, @AuthenticationPrincipal User user){
+        usuarioService.deleteUser(id, user);
+        attr.addFlashAttribute("sucesso", "Usuário excluido!");
+        return "redirect:/users/list-all";
+    }
+
     @GetMapping("/user-manager")
     public String manageUser(Usuario user, ModelMap map){
         if(!map.containsAttribute("user")) map.addAttribute("user", user);
@@ -55,5 +64,10 @@ public class UsuarioController {
         attr.addFlashAttribute("user", user);
         return "redirect:/users/user-manager";
     }
+
+    /*@GetMapping("/editar-dados-pessoais/{id}")
+    public String editarDadosPessoais(@PathVariable("id") Long id, RedirectAttributes attr){
+        Usuario user = usuarioService.buscarPorId(id);
+    }*/
 
 }

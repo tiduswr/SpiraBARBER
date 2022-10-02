@@ -13,6 +13,8 @@ import spyrabarber.domain.Perfil;
 import spyrabarber.domain.PerfilTipo;
 import spyrabarber.domain.Usuario;
 import spyrabarber.repository.UsuarioRepository;
+import spyrabarber.web.exception.ClienteHasMoreThanOnePerfilException;
+import spyrabarber.web.exception.SelfExclusionException;
 import spyrabarber.web.exception.UsuarioNotFoundException;
 
 import java.util.ArrayList;
@@ -60,14 +62,28 @@ public class UsuarioService implements UserDetailsService {
     }
 
     @Transactional(readOnly = true)
-    public Usuario buscarPorId(Long id) {
+    public Usuario buscarPorId(Long id) throws UsuarioNotFoundException{
         return userRepo.findById(id)
-                .orElseThrow(() -> new UsuarioNotFoundException("Usuario não encontrado"));
+                .orElseThrow(() -> new UsuarioNotFoundException("Usuario não encontrado na base de dados do servidor"));
     }
 
     @Transactional(readOnly = false)
-    public void saveUser(Usuario user) {
+    public void saveUser(Usuario user) throws ClienteHasMoreThanOnePerfilException{
+        if(user.getPerfis().contains(PerfilTipo.CLIENTE.buildPerfil()) && user.getPerfis().size() > 1)
+            throw new ClienteHasMoreThanOnePerfilException("O cliente não pode ter mais de um perfil");
         user.setSenha(new BCryptPasswordEncoder().encode(user.getSenha()));
         userRepo.save(user);
     }
+
+    @Transactional(readOnly = false)
+    public void deleteUser(Long id, User user) throws SelfExclusionException{
+        Usuario usuario = buscarPorId(id);
+        checkIfHasDependency(user, usuario);
+        userRepo.delete(usuario);
+    }
+
+    public void checkIfHasDependency(User user, Usuario usuario){
+        if(user.getUsername().equalsIgnoreCase(usuario.getEmail())) throw new SelfExclusionException("Você não pode se excluir");
+    }
+
 }
