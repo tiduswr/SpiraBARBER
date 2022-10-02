@@ -33,14 +33,14 @@
                         <td class="text-center" th:case="*">Não</td>
                     </div>
                     <td class="text-center">
-                        <div th:each="p : ${u.perfis}">
+                        <div class="d-inline" th:each="p : ${u.perfis}">
                             <i th:if="${p.desc == 'ADMIN'}" title="Administrador" class="fa-solid fa-key"></i>
                             <i th:if="${p.desc == 'CLIENTE'}" title="Cliente" class="fa-solid fa-user"></i>
                             <i th:if="${p.desc == 'BARBEIRO'}" title="Barbeiro" class="fa-solid fa-scissors"></i>
                         </div>
                     </td>
                     <td class="text-center">
-                        <a href="#" class="btn btn-warning btn-sm edit">
+                        <a th:href="@{/users/editar/} + ${u.id}" class="btn btn-warning btn-sm edit">
                             <i class="fa-solid fa-pen-to-square"></i>
                         </a>
                         <a href="#" class="btn btn-danger btn-sm delete">

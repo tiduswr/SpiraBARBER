@@ -15,6 +15,13 @@ public enum PerfilTipo {
         return new Perfil(cod, desc);
     }
 
+    public static Perfil buildByCod(long cod){
+        for(PerfilTipo p : values()){
+            if(p.cod == cod) return p.buildPerfil();
+        }
+        return null;
+    }
+
     public long getCod(){
         return cod;
     }

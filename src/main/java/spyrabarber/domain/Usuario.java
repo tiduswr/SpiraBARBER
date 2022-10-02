@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "users")
@@ -22,7 +23,7 @@ public class Usuario extends AbstractEntity{
     @Column(name = "password", nullable = false)
     private String senha;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_has_profile",
             joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
@@ -69,8 +70,8 @@ public class Usuario extends AbstractEntity{
         this.senha = senha;
     }
 
-    public List<Perfil> getPerfis() {
-        return new ArrayList<Perfil>(perfis);
+    public Set<Perfil> getPerfis() {
+        return perfis;
     }
 
     public void setPerfis(Set<Perfil> perfis) {
@@ -85,4 +86,13 @@ public class Usuario extends AbstractEntity{
         this.ativo = ativo;
     }
 
+    @Override
+    public String toString() {
+        return "Usuario{" +
+                "email='" + email + '\'' +
+                ", senha='" + senha + '\'' +
+                ", perfis=" + perfis.stream().map(Perfil::getDesc).collect(Collectors.joining(",")) +
+                ", ativo=" + ativo +
+                '}';
+    }
 }

@@ -6,11 +6,14 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import spyrabarber.domain.Perfil;
+import spyrabarber.domain.PerfilTipo;
 import spyrabarber.domain.Usuario;
 import spyrabarber.repository.UsuarioRepository;
+import spyrabarber.web.exception.UsuarioNotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,10 +38,12 @@ public class UsuarioService implements UserDetailsService {
         );
     }
 
-    private String[] getAuthoritys(List<Perfil> perfis){
-        String[] arr = new String[perfis.size()];
-        for(int i = 0; i < perfis.size(); i++){
-            arr[i] = perfis.get(i).getDesc();
+    private String[] getAuthoritys(Set<Perfil> perfis){
+        List<Perfil> p = new ArrayList<>(perfis);
+
+        String[] arr = new String[p.size()];
+        for(int i = 0; i < p.size(); i++){
+            arr[i] = p.get(i).getDesc();
         }
 
         return arr;
@@ -54,4 +59,15 @@ public class UsuarioService implements UserDetailsService {
         return userRepo.findAll();
     }
 
+    @Transactional(readOnly = true)
+    public Usuario buscarPorId(Long id) {
+        return userRepo.findById(id)
+                .orElseThrow(() -> new UsuarioNotFoundException("Usuario não encontrado"));
+    }
+
+    @Transactional(readOnly = false)
+    public void saveUser(Usuario user) {
+        user.setSenha(new BCryptPasswordEncoder().encode(user.getSenha()));
+        userRepo.save(user);
+    }
 }
