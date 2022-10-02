@@ -6,7 +6,7 @@
     <body>
         <!--NAVBAR-->
         <nav th:fragment="header" class="navbar navbar-expand-sm navbar-dark bg-dark">
-            <a href="#" class="navbar-brand mb-0 h1">
+            <a th:href="@{/}" class="navbar-brand mb-0 h1">
                 <img class="d-inline-block align-top ms-3" th:src="@{/images/favicon-white.png}" alt="logo" height="40">
             </a>
             <button type="button" data-bs-toggle="collapse" 
@@ -16,10 +16,13 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
-                    <li class="nav-item active">
-                        <a href="#" class="nav-link">
-                            <strong>OPÇÃO</strong>
-                        </a>
+                    <li class="nav-item dropdown" sec:authorize="hasAuthority('ADMIN')">
+                        <a class="btn btn-dark dropdown-toggle" href="#" id="dropdown_adm" data-bs-toggle="dropdown" aria-haspopup="true"
+                           aria-expanded="false">Admistrador</a>
+                        <div class="dropdown-menu" aria-labelledby="dropdown_adm">
+                            <a class="dropdown-item" href="#">Cadastro de Usuários</a>
+                            <a class="dropdown-item" th:href="@{/users/list-all}">Lista de Usuários</a>
+                        </div>
                     </li>
                 </ul>
                 <ul class="navbar-nav ms-auto align-middle me-3">

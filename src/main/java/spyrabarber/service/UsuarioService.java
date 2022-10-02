@@ -12,8 +12,11 @@ import spyrabarber.domain.Perfil;
 import spyrabarber.domain.Usuario;
 import spyrabarber.repository.UsuarioRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UsuarioService implements UserDetailsService {
@@ -37,6 +40,7 @@ public class UsuarioService implements UserDetailsService {
         for(int i = 0; i < perfis.size(); i++){
             arr[i] = perfis.get(i).getDesc();
         }
+
         return arr;
     }
 
@@ -44,4 +48,10 @@ public class UsuarioService implements UserDetailsService {
     private Optional<Usuario> buscarPorEmailEAtivo(String username) {
         return userRepo.findByEmailAndAtivo(username);
     }
+
+    @Transactional(readOnly = true)
+    public List<Usuario> listarTodosOsUsuarios(){
+        return userRepo.findAll();
+    }
+
 }

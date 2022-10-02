@@ -29,6 +29,7 @@ public class SecurityConfig {
         http.authorizeRequests()
             .antMatchers("/css/**", "/js/**","/images/**").permitAll()
             .antMatchers("/", "/home").permitAll()
+            .antMatchers("/users/**").hasAuthority("ADMIN")
             //Mapeando Login
             .and()
                 .formLogin()

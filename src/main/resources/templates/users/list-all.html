@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+
+<!--MAIN-->
+<div class="container mt-5" layout:fragment="corpo">
+
+    <div class="text-center">
+        <h1 class="display-5 mb-5"><strong>Listar Usuários</strong></h1>
+    </div>
+
+    <div class="col mt-5">
+        <table class="table table-striped table-dark">
+            <thead>
+            <tr>
+                <th style="display:none;">id</th>
+                <th class="text-center">Usuario</th>
+                <th class="text-center">Ativo</th>
+                <th class="text-center">Perfis</th>
+                <th class="text-center">Ações</th>
+            </tr>
+            </thead>
+            <tbody id="users-list">
+                <tr th:each="u : ${users}">
+                    <td style="display:none;" th:text="${u.id}">0</td>
+                    <td th:text="${u.email}">someuser@gmail.com</td>
+                    <div th:switch="${u.ativo == true}">
+                        <td class="text-center" th:case="${true}">Sim</td>
+                        <td class="text-center" th:case="*">Não</td>
+                    </div>
+                    <td class="text-center">
+                        <div th:each="p : ${u.perfis}">
+                            <i th:if="${p.desc == 'ADMIN'}" title="Administrador" class="fa-solid fa-key"></i>
+                            <i th:if="${p.desc == 'CLIENTE'}" title="Cliente" class="fa-solid fa-user"></i>
+                            <i th:if="${p.desc == 'BARBEIRO'}" title="Barbeiro" class="fa-solid fa-scissors"></i>
+                        </div>
+                    </td>
+                    <td class="text-center">
+                        <a href="#" class="btn btn-warning btn-sm edit">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </a>
+                        <a href="#" class="btn btn-danger btn-sm delete">
+                            <i class="fa-solid fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+</body>
+</html>

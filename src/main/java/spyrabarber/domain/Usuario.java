@@ -3,17 +3,22 @@ package spyrabarber.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
 public class Usuario extends AbstractEntity{
 
+    @NotEmpty(message = "O email não pode estar vazio")
     @Column(name = "email", unique = true, nullable = false)
     private String email;
 
     @JsonIgnore
+    @NotEmpty(message = "A senha não pode estar vazia")
     @Column(name = "password", nullable = false)
     private String senha;
 
@@ -23,7 +28,7 @@ public class Usuario extends AbstractEntity{
             joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
             inverseJoinColumns = {@JoinColumn(name = "profile_id", referencedColumnName = "id")}
     )
-    private List<Perfil> perfis;
+    private Set<Perfil> perfis;
 
     @Column(name = "active", nullable = false, columnDefinition = "TINYINT(1)")
     private boolean ativo;
@@ -39,9 +44,9 @@ public class Usuario extends AbstractEntity{
     // adiciona perfis a lista
     public void addPerfil(PerfilTipo tipo) {
         if (this.perfis == null) {
-            this.perfis = new ArrayList<>();
+            this.perfis = new HashSet<>();
         }
-        this.perfis.add(new Perfil(tipo.getCod()));
+        this.perfis.add(tipo.buildPerfil());
     }
 
     public Usuario(String email) {
@@ -65,10 +70,10 @@ public class Usuario extends AbstractEntity{
     }
 
     public List<Perfil> getPerfis() {
-        return perfis;
+        return new ArrayList<Perfil>(perfis);
     }
 
-    public void setPerfis(List<Perfil> perfis) {
+    public void setPerfis(Set<Perfil> perfis) {
         this.perfis = perfis;
     }
 
