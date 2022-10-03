@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+    <head>
+        <meta charset="UTF-8">
+    </head>
+    <body>
+
+        <!--MAIN-->
+        <div class="container mt-5" layout:fragment="corpo">
+            <div class="text-center">
+                <h1 class="display-5 mb-5"><strong>Atribuir cargos</strong></h1>
+            </div>
+
+            <div th:replace="fragments/alert  :: alerta-sucesso"></div>
+
+            <form th:action="@{/users/cargos/save}"
+                  th:object="${cargodto}" id="user-form" class="row justify-content-center mb-4"
+                  autocomplete="off" method="POST">
+
+                <div class="row">
+                    <div class="col mb-3">
+                        <label for="cargo">Cargo</label>
+                        <select class="form-select" th:classappend="${cargo != null} ? is-invalid" th:field="*{cargo}" id="cargo">
+                            <option value="" selected>Selecione um cargo</option>
+                            <option 
+                                th:each="c : ${cargos}"
+                                th:value="${c.id}"
+                                th:text="${c.desc}"
+                            >One</option>
+                        </select>
+                        <div th:if="${cargo != null}" class="text-danger">
+                            <small th:text="${cargo}"></small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col mb-3">
+                        <label for="dtAdmissao">Data Admissão</label>
+                        <input class="form-control" th:classappend="${dtAdmissao != null} ? is-invalid" th:field="*{dtAdmissao}" id="dtAdmissao" type="date"
+                               placeholder="Insira a senha do Usuário" required>
+                        <div th:if="${dtAdmissao != null}" class="text-danger">
+                            <small th:text="${dtAdmissao}"></small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col mb-3">
+                        <label for="dtDemissao">Data Demissão</label>
+                        <input class="form-control" th:classappend="${dtDemissao != null} ? is-invalid" th:field="*{dtDemissao}" id="dtDemissao" type="date"
+                               placeholder="Insira a senha do Usuário">
+                        <div th:if="${dtDemissao != null}" class="text-danger">
+                            <small th:text="${dtDemissao}"></small>
+                        </div>
+                    </div>
+                </div>
+                
+                <input type="hidden" id="user" th:field="*{user.id}">
+
+                <div class="row">
+                    <div class="col-10">
+                        <button type="submit" class="btn btn-primary" data-toggle="tooltip"
+                                data-placement="right" title="Salvar">
+                            <i class="fas fa-save"></i> Salvar
+                        </button>
+                    </div>
+                </div>
+
+            </form>
+
+            <div class="text-center">
+                <h2 class="display-6 mb-1">
+                    <strong>Histórico de Cargos</strong>
+                </h2>
+            </div>
+
+            <div class="col mt-5">
+                <table class="table table-striped table-dark">
+                    <thead>
+                    <tr>
+                        <th class="text-center">Cargo</th>
+                        <th class="text-center">Data Admissao</th>
+                        <th class="text-center">Data Demissao</th>
+                    </tr>
+                    </thead>
+                    <tbody id="product-list">
+                        <tr th:each="e : ${cargodto.expirados}">
+                            <td th:text="${e.cargo.desc}">desc</td>
+                            <td th:text="${#temporals.format(e.dtAdm, 'dd/MM/yyyy')}"></td>
+                            <td th:text="${#temporals.format(e.dtDemissao, 'dd/MM/yyyy')}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+    </body>
+</html>

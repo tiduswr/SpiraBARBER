@@ -10,9 +10,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import spyrabarber.domain.Pessoa;
 import spyrabarber.domain.Usuario;
+import spyrabarber.service.PessoaService;
 import spyrabarber.service.UsuarioService;
 
 import javax.validation.Valid;
@@ -23,6 +24,9 @@ public class UsuarioController {
 
     @Autowired
     private UsuarioService usuarioService;
+
+    @Autowired
+    private PessoaService pessoaService;
 
     @GetMapping("/list-all")
     public String listAllUsers(ModelMap map){
@@ -45,6 +49,20 @@ public class UsuarioController {
         return "redirect:/users/user-manager";
     }
 
+    @PostMapping("/salvar-credenciais")
+    public String saveCredenciais(@Valid Pessoa pessoa, RedirectAttributes attr, BindingResult errors){
+        if(errors.hasErrors()){
+            errors.getFieldErrors().forEach(e -> {
+                attr.addFlashAttribute(e.getField(), e.getDefaultMessage());
+            });
+        }else{
+            pessoa = pessoaService.atualizarUsuarioComDadosPessoais(pessoa);
+            attr.addFlashAttribute("sucesso", "Dados salvos com sucesso!");
+        }
+        attr.addFlashAttribute("pessoa", pessoa);
+        return "redirect:/users/credenciais-manager";
+    }
+
     @GetMapping("/excluir/{id}")
     public String deleteUser(@PathVariable("id") Long id, RedirectAttributes attr, @AuthenticationPrincipal User user){
         usuarioService.deleteUser(id, user);
@@ -65,9 +83,17 @@ public class UsuarioController {
         return "redirect:/users/user-manager";
     }
 
-    /*@GetMapping("/editar-dados-pessoais/{id}")
-    public String editarDadosPessoais(@PathVariable("id") Long id, RedirectAttributes attr){
-        Usuario user = usuarioService.buscarPorId(id);
-    }*/
+    @GetMapping("/credenciais-manager")
+    public String credenciaisUser(Pessoa pessoa, ModelMap map){
+        if(!map.containsAttribute("pessoa")) map.addAttribute("pessoa", pessoa);
+        return "/users/pessoa-cadastro";
+    }
+
+    @GetMapping("/pre-editar-credenciais/{id}")
+    public String preEditarDadosCredenciais(@PathVariable("id") Long id, RedirectAttributes attr){
+        Pessoa pessoa = pessoaService.buscarPorUsuarioId(id);
+        attr.addFlashAttribute("pessoa", pessoa);
+        return "redirect:/users/credenciais-manager";
+    }
 
 }

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+    <head>
+        <meta charset="UTF-8">
+    </head>
+    <body>
+
+        <!--MAIN-->
+        <div class="container mt-5" layout:fragment="corpo">
+            <div class="text-center">
+                <h1 class="display-5 mb-5"><strong>Editar Dados Pessoais do Usuário</strong></h1>
+            </div>
+            <div class="main row justify-content-center">
+
+                <div th:replace="fragments/alert  :: alerta-sucesso"></div>
+
+                <form th:action="@{/users/salvar-credenciais}"
+                    th:object="${pessoa}" id="user-form" class="row justify-content-center mb-4"
+                    autocomplete="off" method="POST">
+
+                    <div class="row">
+                        <div class="col mb-3">
+                            <label for="name">Nome</label>
+                            <input class="form-control" th:classappend="${name != null} ? is-invalid" th:field="*{name}" id="name" type="text"
+                                placeholder="Insira o email do Usuário" required>
+                            <div th:if="${name != null}" class="text-danger">
+                                <small th:text="${name}">O usuário precisa de um email.</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col mb-3">
+                            <label for="dtNascimento">Data Nascimento</label>
+                            <input class="form-control" th:classappend="${dtNascimento != null} ? is-invalid" th:field="*{dtNascimento}" id="dtNascimento" type="date"
+                                placeholder="Insira a senha do Usuário" required>
+                            <div th:if="${dtNascimento != null}" class="text-danger">
+                                <small th:text="${dtNascimento}">O usuário precisa de um email.</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="id" th:field="*{id}">
+                    <input type="hidden" name="uid" th:field="*{user.id}">
+
+                    <div class="row">
+                        <div class="col-10">
+                            <button type="submit" class="btn btn-primary" data-toggle="tooltip"
+											data-placement="right" title="Salvar">
+								<i class="fas fa-save"></i> Salvar
+							</button>
+                        </div>
+                    </div>
+                </form>
+        </div>
+
+    </body>
+</html>

@@ -9,13 +9,12 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import spyrabarber.domain.Perfil;
-import spyrabarber.domain.PerfilTipo;
-import spyrabarber.domain.Usuario;
+import spyrabarber.domain.*;
+import spyrabarber.repository.CargoHistoricoRepository;
+import spyrabarber.repository.PessoaRepository;
+import spyrabarber.repository.UserCargoRepository;
 import spyrabarber.repository.UsuarioRepository;
-import spyrabarber.web.exception.ClienteHasMoreThanOnePerfilException;
-import spyrabarber.web.exception.SelfExclusionException;
-import spyrabarber.web.exception.UsuarioNotFoundException;
+import spyrabarber.web.exception.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +27,12 @@ public class UsuarioService implements UserDetailsService {
 
     @Autowired
     private UsuarioRepository userRepo;
+
+    @Autowired
+    private PessoaRepository pessoaRepository;
+
+    @Autowired
+    private CargoHistoricoRepository userCargoRepository;
 
     @Override @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -68,22 +73,34 @@ public class UsuarioService implements UserDetailsService {
     }
 
     @Transactional(readOnly = false)
-    public void saveUser(Usuario user) throws ClienteHasMoreThanOnePerfilException{
-        if(user.getPerfis().contains(PerfilTipo.CLIENTE.buildPerfil()) && user.getPerfis().size() > 1)
+    public void saveUser(Usuario user) throws ClienteHasMoreThanOnePerfilException, UserHasNotDataToBeActiveException{
+        if(user.getPerfis().contains(PerfilTipo.CLIENTE.buildPerfil()) && user.getPerfis().size() > 1){
             throw new ClienteHasMoreThanOnePerfilException("O cliente não pode ter mais de um perfil");
+        }
         user.setSenha(new BCryptPasswordEncoder().encode(user.getSenha()));
-        userRepo.save(user);
+        user = userRepo.save(user);
+        if(user.isAtivo()){
+            Optional<Pessoa> pessoa = pessoaRepository.findByUserId(user.getId());
+            if(!pessoa.isPresent()) throw new UserHasNotDataToBeActiveException("O usuário não possui cadastro completo para estar ativo");
+        }
     }
 
     @Transactional(readOnly = false)
-    public void deleteUser(Long id, User user) throws SelfExclusionException{
+    public void deleteUser(Long id, User user) throws SelfExclusionException, HasCargosException{
         Usuario usuario = buscarPorId(id);
+        Pessoa pessoa = pessoaRepository.findByUserId(id).orElse(new Pessoa());
+
         checkIfHasDependency(user, usuario);
+        if(pessoa.getId() != null) pessoaRepository.delete(pessoa);
         userRepo.delete(usuario);
     }
 
     public void checkIfHasDependency(User user, Usuario usuario){
-        if(user.getUsername().equalsIgnoreCase(usuario.getEmail())) throw new SelfExclusionException("Você não pode se excluir");
+        if(user.getUsername().equalsIgnoreCase(usuario.getEmail())) {
+            throw new SelfExclusionException("Você não pode se excluir");
+        }else if(!userCargoRepository.findAllByUserId(usuario.getId()).isEmpty()){
+            throw new HasCargosException("Esse perfil possui histórico de cargos, tente apenas inativalo");
+        }
     }
 
 }

@@ -42,13 +42,16 @@
                         </div>
                     </td>
                     <td class="text-center">
-                        <a th:href="@{/users/editar/} + ${u.id}" class="btn btn-warning btn-sm edit">
+                        <a th:href="@{/users/editar/} + ${u.id}" class="btn btn-warning btn-sm edit" title="Editar Usuario">
                             <i class="fa-solid fa-pen-to-square"></i>
                         </a>
-                        <a th:href="@{/users/editar-dados-pessoais/} + ${u.id}" class="btn btn-warning btn-sm edit">
-                            <i class="fa-solid fa-pen-to-square"></i>
+                        <a th:href="@{/users/pre-editar-credenciais/} + ${u.id}" class="btn btn-primary btn-sm edit" title="Editar dados pessoais">
+                            <i class="fa-solid fa-user-pen"></i>
                         </a>
-                        <a href="#" class="btn btn-danger btn-sm delete">
+                        <a th:href="@{/users/cargos/editarcargo/byid/} + ${u.id}" class="btn btn-secondary btn-sm edit" title="Editar Cargos">
+                            <i class="fa-solid fa-briefcase"></i>
+                        </a>
+                        <a href="#" class="btn btn-danger btn-sm delete" title="Deletar">
                             <i class="fa-solid fa-trash"></i>
                         </a>
                     </td>

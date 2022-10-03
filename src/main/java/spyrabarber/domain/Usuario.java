@@ -31,6 +31,10 @@ public class Usuario extends AbstractEntity{
     )
     private Set<Perfil> perfis;
 
+    @OneToOne(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_cargo_id")
+    private UserCargo userCargo;
+
     @Column(name = "active", nullable = false, columnDefinition = "TINYINT(1)")
     private boolean ativo;
 
@@ -56,6 +60,14 @@ public class Usuario extends AbstractEntity{
 
     public String getEmail() {
         return email;
+    }
+
+    public UserCargo getUserCargo() {
+        return userCargo;
+    }
+
+    public void setUserCargo(UserCargo cargo) {
+        this.userCargo = cargo;
     }
 
     public void setEmail(String email) {
@@ -84,15 +96,5 @@ public class Usuario extends AbstractEntity{
 
     public void setAtivo(boolean ativo) {
         this.ativo = ativo;
-    }
-
-    @Override
-    public String toString() {
-        return "Usuario{" +
-                "email='" + email + '\'' +
-                ", senha='" + senha + '\'' +
-                ", perfis=" + perfis.stream().map(Perfil::getDesc).collect(Collectors.joining(",")) +
-                ", ativo=" + ativo +
-                '}';
     }
 }
