@@ -32,7 +32,7 @@ public class UsuarioService implements UserDetailsService {
     private PessoaRepository pessoaRepository;
 
     @Autowired
-    private CargoHistoricoRepository userCargoRepository;
+    private CargoHistoricoRepository cargoHistoricoRepository;
 
     @Override @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -86,8 +86,9 @@ public class UsuarioService implements UserDetailsService {
     }
 
     @Transactional(readOnly = false)
-    public void deleteUser(Long id, User user) throws SelfExclusionException, HasCargosException{
-        Usuario usuario = buscarPorId(id);
+    public void deleteUser(Long id, User user) throws SelfExclusionException, HasCargosException, UsuarioNotFoundException{
+        Usuario usuario = userRepo.findById(id)
+                .orElseThrow(() -> new UsuarioNotFoundException("Usuario não encontrado na base de dados do servidor"));
         Pessoa pessoa = pessoaRepository.findByUserId(id).orElse(new Pessoa());
 
         checkIfHasDependency(user, usuario);
@@ -95,10 +96,10 @@ public class UsuarioService implements UserDetailsService {
         userRepo.delete(usuario);
     }
 
-    public void checkIfHasDependency(User user, Usuario usuario){
+    private void checkIfHasDependency(User user, Usuario usuario){
         if(user.getUsername().equalsIgnoreCase(usuario.getEmail())) {
             throw new SelfExclusionException("Você não pode se excluir");
-        }else if(!userCargoRepository.findAllByUserId(usuario.getId()).isEmpty()){
+        }else if(!cargoHistoricoRepository.findAllByUserId(usuario.getId()).isEmpty()){
             throw new HasCargosException("Esse perfil possui histórico de cargos, tente apenas inativalo");
         }
     }

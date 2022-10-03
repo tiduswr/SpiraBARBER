@@ -9,8 +9,6 @@ import spyrabarber.repository.PessoaRepository;
 import spyrabarber.repository.UsuarioRepository;
 import spyrabarber.web.exception.UsuarioNotFoundException;
 
-import java.util.Optional;
-
 @Service
 public class PessoaService {
 
@@ -26,7 +24,8 @@ public class PessoaService {
     }
 
     @Transactional(readOnly = false)
-    public Pessoa atualizarUsuarioComDadosPessoais(Pessoa pessoa) {
+    public Pessoa atualizarUsuarioComDadosPessoais(Pessoa pessoa) throws UsuarioNotFoundException{
+        if(pessoa.getUser() == null) throw new UsuarioNotFoundException("Usuário não encontrado na base de dados");
         Usuario user = usuarioRepository.findById(pessoa.getUser().getId())
                 .orElseThrow(() -> new UsuarioNotFoundException("Usuário não encontrado na base de dados"));
         pessoa.setUser(user);
