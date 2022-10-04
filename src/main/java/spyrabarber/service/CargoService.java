@@ -32,7 +32,12 @@ public class CargoService {
     private CargoHistoricoRepository cargoHistoricoRepository;
 
     @Transactional(readOnly = true)
-    public CargoDTO montarCargoDTOByUser(Long userid){
+    public List<Cargo> buscarTodosOsCargos(){
+        return cargoRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public CargoDTO montarCargoDTOByUser(Long userid) throws UsuarioNotFoundException{
         Usuario user = userRepo.findById(userid)
                 .orElseThrow(() -> new UsuarioNotFoundException("Usuario não encontrado na base de dados"));
         CargoDTO cargoDTO = new CargoDTO();
@@ -50,34 +55,10 @@ public class CargoService {
         return cargoDTO;
     }
 
-    @Transactional(readOnly = true)
-    public List<Cargo> buscarTodosOsCargos(){
-        return cargoRepository.findAll();
-    }
-
     @Transactional(readOnly = false)
     public boolean atualizarCargo(CargoDTO c, BindingResult errors) {
 
-        LocalDate dtAdm = c.getDtAdmissao();
-        LocalDate dtDem = c.getDtDemissao();
-        List<CargoHistorico> historico = cargoHistoricoRepository.findAllByUserId(c.getUser().getId());
-
-        LocalDate maxDemDate = historico
-                .stream()
-                .map(CargoHistorico::getDtDemissao)
-                .max(LocalDate::compareTo)
-                .orElse(null);
-
-        if(maxDemDate != null && !dtAdm.isAfter(maxDemDate)){
-            errors.addError(new FieldError("dtAdmissao", "dtAdmissao",
-                    "A data de admissão precisa ser posterior a ultima data de demissão."));
-            return false;
-        }
-        if(dtDem != null && !dtDem.isAfter(dtAdm)){
-            errors.addError(new FieldError("dtDemissao", "dtDemissao",
-                    "A data de demissão precisa ser posterior a data de admissão."));
-            return false;
-        }
+        if(!checkDates(c, errors)) return false;
 
         Usuario user = userRepo.findById(c.getUser().getId())
                 .orElseThrow(() -> new UsuarioNotFoundException("Usuario não encontrado na base de dados"));
@@ -108,4 +89,40 @@ public class CargoService {
         userRepo.save(user);
         return true;
     }
+
+    private boolean checkDates(CargoDTO c, BindingResult errors){
+        LocalDate dtAdm = c.getDtAdmissao();
+        LocalDate dtDem = c.getDtDemissao();
+        List<CargoHistorico> historico = cargoHistoricoRepository.findAllByUserId(c.getUser().getId());
+
+        LocalDate maxDemDate = historico
+                .stream()
+                .map(CargoHistorico::getDtDemissao)
+                .max(LocalDate::compareTo)
+                .orElse(null);
+
+        if(maxDemDate != null && !dtAdm.isAfter(maxDemDate)){
+            errors.addError(new FieldError("dtAdmissao", "dtAdmissao",
+                    "A data de admissão precisa ser posterior a ultima data de demissão."));
+            return false;
+        }
+        if(dtDem != null && !dtDem.isAfter(dtAdm)){
+            errors.addError(new FieldError("dtDemissao", "dtDemissao",
+                    "A data de demissão precisa ser posterior a data de admissão."));
+            return false;
+        }
+        if(dtAdm.isAfter(LocalDate.now())){
+            errors.addError(new FieldError("dtAdmissao", "dtAdmissao",
+                    "A data de admissão precisa ser posterior a data de hoje."));
+            return false;
+        }
+        if(dtDem != null && dtDem.isAfter(LocalDate.now())){
+            errors.addError(new FieldError("dtDemissao", "dtDemissao",
+                    "A data de demissão precisa ser posterior a data de hoje."));
+            return false;
+        }
+
+        return true;
+    }
+
 }
