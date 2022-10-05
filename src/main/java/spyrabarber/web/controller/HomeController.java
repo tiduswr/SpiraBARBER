@@ -9,12 +9,12 @@ public class HomeController {
 
     @GetMapping({"/", "/home"})
     public String home(){
-        return "/index";
+        return "index";
     }
 
     @GetMapping("/login")
     public String login(){
-        return "/login";
+        return "login";
     }
 
     @GetMapping({"/login-error"})
@@ -22,7 +22,7 @@ public class HomeController {
         map.addAttribute("alerta", "erro");
         map.addAttribute("titulo", "Credenciais Inválidas!");
         map.addAttribute("texto", "Login ou senha incorretos, tente novamente.");
-        return "/login";
+        return "login";
     }
 
 }

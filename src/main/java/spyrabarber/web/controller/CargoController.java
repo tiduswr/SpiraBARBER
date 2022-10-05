@@ -27,7 +27,7 @@ public class CargoController {
         if(!map.containsAttribute("cargodto"))
             throw new CargoWithoutUserException("Não é possivel completar a operação");
         map.addAttribute("cargos", cargoService.buscarTodosOsCargos());
-        return "/users/cargos";
+        return "users/cargos";
     }
 
     @GetMapping("/editarcargo/byid/{id}")

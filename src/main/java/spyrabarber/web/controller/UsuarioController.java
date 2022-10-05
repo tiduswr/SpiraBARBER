@@ -31,7 +31,7 @@ public class UsuarioController {
     @GetMapping("/list-all")
     public String listAllUsers(ModelMap map){
         map.addAttribute("users", usuarioService.listarTodosOsUsuarios());
-        return "/users/list-all";
+        return "users/list-all";
     }
 
     @PostMapping("/save")
@@ -73,7 +73,7 @@ public class UsuarioController {
     @GetMapping("/user-manager")
     public String manageUser(Usuario user, ModelMap map){
         if(!map.containsAttribute("user")) map.addAttribute("user", user);
-        return "/users/cadastro";
+        return "users/cadastro";
     }
 
     @GetMapping("/editar/{id}")
@@ -86,7 +86,7 @@ public class UsuarioController {
     @GetMapping("/credenciais-manager")
     public String credenciaisUser(Pessoa pessoa, ModelMap map){
         if(!map.containsAttribute("pessoa")) map.addAttribute("pessoa", pessoa);
-        return "/users/pessoa-cadastro";
+        return "users/pessoa-cadastro";
     }
 
     @GetMapping("/pre-editar-credenciais/{id}")
