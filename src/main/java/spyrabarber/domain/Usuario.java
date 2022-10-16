@@ -4,11 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "users")
@@ -31,6 +28,14 @@ public class Usuario extends AbstractEntity{
     )
     private Set<Perfil> perfis;
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_has_servico",
+            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "servico_id", referencedColumnName = "id")}
+    )
+    private Set<Servico> servicos;
+
     @OneToOne(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     @JoinColumn(name = "user_cargo_id")
     private UserCargo userCargo;
@@ -52,6 +57,14 @@ public class Usuario extends AbstractEntity{
             this.perfis = new HashSet<>();
         }
         this.perfis.add(tipo.buildPerfil());
+    }
+
+    // adiciona servicos a lista
+    public void addServico(Servico servico) {
+        if (this.perfis == null) {
+            this.perfis = new HashSet<>();
+        }
+        this.servicos.add(servico);
     }
 
     public Usuario(String email) {
@@ -86,6 +99,10 @@ public class Usuario extends AbstractEntity{
         return perfis;
     }
 
+    public Set<Servico> getServicos() {
+        return servicos;
+    }
+
     public void setPerfis(Set<Perfil> perfis) {
         this.perfis = perfis;
     }
@@ -96,5 +113,9 @@ public class Usuario extends AbstractEntity{
 
     public void setAtivo(boolean ativo) {
         this.ativo = ativo;
+    }
+
+    public void setServicos(Set<Servico> servicos) {
+        this.servicos = servicos;
     }
 }

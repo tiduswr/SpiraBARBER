@@ -77,6 +77,28 @@ CREATE TABLE `cargo_historico`(
     CONSTRAINT `FK_HISTORICO_CARGO_ID` FOREIGN KEY (`cargo_id`) REFERENCES `cargos` (`id`)
 );
 
+DROP TABLE IF EXISTS `servicos`;
+CREATE TABLE `servicos`(
+    `id` bigint NOT NULL AUTO_INCREMENT,
+    `nome` varchar(255) NOT NULL,
+    `tempo_conclusao_min` int NOT NULL,
+    `descricao` varchar(255) NOT NULL,
+    `preco` decimal(19,2) NOT NULL,
+    `image_name` varchar(255) NOT NULL,
+    PRIMARY KEY (`id`)
+);
+
+DROP TABLE IF EXISTS `user_has_servico`;
+CREATE TABLE `user_has_servico`(
+    `user_id` bigint NOT NULL,
+    `servico_id` bigint NOT NULL,
+    PRIMARY KEY(`user_id`, `servico_id`),
+    KEY `FK_USER_HAS_SERVICO_ID` (`servico_id`),
+    KEY `FK_SERVICO_HAS_USER_ID` (`user_id`),
+    CONSTRAINT `FK_USER_HAS_SERVICO_ID` FOREIGN KEY (`servico_id`) REFERENCES `servicos` (`id`),
+    CONSTRAINT `FK_SERVICO_HAS_USER_ID` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+);
+
 INSERT INTO `cargos` VALUES (1,'BARBEIRO'), (2,'AUXILIAR ADMINISTRATIVO');
 INSERT INTO `profile` VALUES (1,'ADMIN'), (2,'BARBEIRO'), (3,'CLIENTE');
 INSERT INTO `users` VALUES(1, null, 1, 'harllem@gmail.com', '$2a$10$VyJ54HKenVfdaVr0tzuVwOxEq9pHdg9iwwmX.B3k7c3Eqb75QhbJW');

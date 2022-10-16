@@ -74,14 +74,20 @@ public class UsuarioService implements UserDetailsService {
 
     @Transactional(readOnly = false)
     public void saveUser(Usuario user) throws ClienteHasMoreThanOnePerfilException, UserHasNotDataToBeActiveException{
+        Usuario bd_user = userRepo.findById(user.getId()).orElse(null);
+        if(bd_user != null && bd_user.getServicos() != null && !bd_user.getServicos().isEmpty())
+            user.setServicos(bd_user.getServicos());
+
         if(user.getPerfis().contains(PerfilTipo.CLIENTE.buildPerfil()) && user.getPerfis().size() > 1){
             throw new ClienteHasMoreThanOnePerfilException("O cliente não pode ter mais de um perfil");
         }
+
         user.setSenha(new BCryptPasswordEncoder().encode(user.getSenha()));
         user = userRepo.save(user);
+
         if(user.isAtivo()){
             Optional<Pessoa> pessoa = pessoaRepository.findByUserId(user.getId());
-            if(!pessoa.isPresent()) throw new UserHasNotDataToBeActiveException("O usuário não possui cadastro completo para estar ativo");
+            if(pessoa.isEmpty()) throw new UserHasNotDataToBeActiveException("O usuário não possui cadastro completo para estar ativo");
         }
     }
 
@@ -101,6 +107,8 @@ public class UsuarioService implements UserDetailsService {
             throw new SelfExclusionException("Você não pode se excluir");
         }else if(!cargoHistoricoRepository.findAllByUserId(usuario.getId()).isEmpty()){
             throw new HasCargosException("Esse perfil possui histórico de cargos, tente apenas inativalo");
+        }else if(!usuario.getServicos().isEmpty()){
+            throw new HasServicosException("Esse perfil possui serviços vinculados, tente remove-los antes de excluir");
         }
     }
 

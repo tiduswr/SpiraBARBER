@@ -36,10 +36,19 @@ public class ExceptionController {
     }
 
     @ExceptionHandler(HasCargosException.class)
-    public ModelAndView possuiCargosNoVicnuladosExcessao(HasCargosException e){
+    public ModelAndView possuiCargosNoVinculadosExcessao(HasCargosException e){
         ModelAndView error = new ModelAndView("error");
         error.addObject("status", HttpStatus.METHOD_NOT_ALLOWED.value());
         error.addObject("errorTitle", "Essa pessoa possui histórico de cargos");
+        error.addObject("errorDescription", e.getMessage());
+        return error;
+    }
+
+    @ExceptionHandler(HasServicosException.class)
+    public ModelAndView possuiServicosVinculadosExcessao(HasServicosException e){
+        ModelAndView error = new ModelAndView("error");
+        error.addObject("status", HttpStatus.METHOD_NOT_ALLOWED.value());
+        error.addObject("errorTitle", "Possui Serviços");
         error.addObject("errorDescription", e.getMessage());
         return error;
     }
@@ -58,6 +67,15 @@ public class ExceptionController {
         ModelAndView error = new ModelAndView("error");
         error.addObject("status", HttpStatus.METHOD_NOT_ALLOWED.value());
         error.addObject("errorTitle", "Cadastro Incompleto");
+        error.addObject("errorDescription", e.getMessage());
+        return error;
+    }
+
+    @ExceptionHandler(ServicoNotFoundException.class)
+    public ModelAndView servicoNaoEncontradoExcessao(ServicoNotFoundException e){
+        ModelAndView error = new ModelAndView("error");
+        error.addObject("status", HttpStatus.NOT_FOUND.value());
+        error.addObject("errorTitle", "Não encontrado");
         error.addObject("errorDescription", e.getMessage());
         return error;
     }
