@@ -40,6 +40,10 @@ public class ServicoDTO {
 
     public ServicoDTO(){};
 
+    public ServicoDTO(long id) {
+        this.id = id;
+    }
+
     public String getNome() {
         return nome;
     }

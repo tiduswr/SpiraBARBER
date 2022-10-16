@@ -12,9 +12,6 @@ import spyrabarber.web.exception.ImageManageException;
 import spyrabarber.web.exception.NotUniqueNameException;
 import spyrabarber.web.exception.ServicoHasDependencyException;
 import spyrabarber.web.exception.ServicoNotFoundException;
-
-import javax.imageio.ImageIO;
-import java.io.IOException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -71,7 +68,7 @@ public class ServicosService {
 
         if(saveImage){
             s.setImageName("temp_name");
-            s = servicosRepository.save(s);
+            if(dto.getId() == null) s = servicosRepository.save(s);
             String imagename = "servico-" + s.getId();
             try {
                 MessageDigest m = MessageDigest.getInstance(encryptImagesMessageDigestType);

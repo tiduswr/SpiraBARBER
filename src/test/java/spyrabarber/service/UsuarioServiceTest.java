@@ -2,31 +2,30 @@ package spyrabarber.service;
 
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import config.ApplicationConfigTest;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.test.context.junit4.SpringRunner;
 import spyrabarber.domain.*;
 import spyrabarber.repository.CargoHistoricoRepository;
 import spyrabarber.repository.PessoaRepository;
-import spyrabarber.repository.UserCargoRepository;
 import spyrabarber.repository.UsuarioRepository;
 import spyrabarber.web.exception.*;
-
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
+import java.util.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
+@SpringBootTest
+@AutoConfigureMockMvc
+@RunWith(SpringRunner.class)
 @DisplayName("Testando Usuario service")
-public class UsuarioServiceTest extends ApplicationConfigTest {
+public class UsuarioServiceTest {
 
     @MockBean
     private UsuarioRepository userRepo;
@@ -215,6 +214,36 @@ public class UsuarioServiceTest extends ApplicationConfigTest {
         List<CargoHistorico> historicoMock = new ArrayList<>();
         historicoMock.add(new CargoHistorico());
         Mockito.when(cargoHistoricoRepository.findAllByUserId(ArgumentMatchers.any(Long.class))).thenReturn(historicoMock);
+
+        //Testa
+        userService.deleteUser(mockedID, springUser);
+        Mockito.verify(cargoHistoricoRepository, Mockito.times(1)).findAllByUserId(ArgumentMatchers.any(Long.class));
+    }
+
+    @Test(expected = HasServicosException.class)
+    public void shouldThrowHasServicosExceptionWhenTryingToDeleteUser() {
+        final long mockedID = 1L;
+        final String mockedEmail = "teste@gmail.com";
+        final String anotherMockedEmail = "teste2@gmail.com";
+
+        //Mocka e cria objetos de dependencia
+        User springUser = Mockito.mock(User.class);
+        Mockito.when(springUser.getUsername()).thenReturn(anotherMockedEmail);
+
+        Optional<Usuario> optionalMockedUser = Optional.of(createMockedUserById(mockedID));
+        Usuario mockedUser = optionalMockedUser.get();
+        Mockito.when(mockedUser.getEmail()).thenReturn(mockedEmail);
+        Set<Servico> servicoMock = new HashSet<>();
+        servicoMock.add(new Servico());
+        Mockito.when(mockedUser.getServicos()).thenReturn(servicoMock);
+
+        //Mocka repositorios
+        Mockito.when(userRepo.findById(ArgumentMatchers.eq(mockedID))).thenReturn(optionalMockedUser);
+
+        Optional<Pessoa> optionalMockedPessoa = Optional.of(Mockito.mock(Pessoa.class));
+        Pessoa mockedPessoa = optionalMockedPessoa.get();
+        Mockito.when(mockedPessoa.getId()).thenReturn(mockedID);
+        Mockito.when(pessoaRepository.findByUserId(ArgumentMatchers.any(Long.class))).thenReturn(optionalMockedPessoa);
 
         //Testa
         userService.deleteUser(mockedID, springUser);

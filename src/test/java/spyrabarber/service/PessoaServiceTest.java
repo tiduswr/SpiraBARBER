@@ -1,25 +1,29 @@
 package spyrabarber.service;
 
-import config.ApplicationConfigTest;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit4.SpringRunner;
 import spyrabarber.domain.Pessoa;
 import spyrabarber.domain.Usuario;
 import spyrabarber.repository.PessoaRepository;
 import spyrabarber.repository.UsuarioRepository;
 import spyrabarber.web.exception.UsuarioNotFoundException;
-
 import java.util.Optional;
-
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+@SpringBootTest
+@AutoConfigureMockMvc
+@RunWith(SpringRunner.class)
 @DisplayName("Testando pessoa service")
-public class PessoaServiceTest extends ApplicationConfigTest {
+public class PessoaServiceTest{
 
     @MockBean
     private PessoaRepository pessoaRepository;

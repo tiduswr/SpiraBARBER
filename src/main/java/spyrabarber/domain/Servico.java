@@ -1,6 +1,7 @@
 package spyrabarber.domain;
 
 import org.springframework.format.annotation.NumberFormat;
+import spyrabarber.domain.dto.ServicoDTO;
 
 import javax.persistence.*;
 import javax.validation.constraints.DecimalMin;
@@ -47,6 +48,18 @@ public class Servico extends AbstractEntity{
     }
 
     public Servico(){}
+
+    public Servico(ServicoDTO dto){
+        super.setId(dto.getId());
+        nome = dto.getNome();
+        tempo = dto.getTempo();
+        descricao = dto.getDescricao();
+        preco = dto.getPreco();
+    }
+
+    public void setUsers(Set<Usuario> users) {
+        this.users = users;
+    }
 
     public Set<Usuario> getUsers() {
         return users;

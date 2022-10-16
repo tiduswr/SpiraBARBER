@@ -1,12 +1,15 @@
 package spyrabarber.service;
 
-import config.ApplicationConfigTest;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 import spyrabarber.domain.*;
@@ -16,16 +19,17 @@ import spyrabarber.repository.CargoRepository;
 import spyrabarber.repository.UserCargoRepository;
 import spyrabarber.repository.UsuarioRepository;
 import spyrabarber.web.exception.UsuarioNotFoundException;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.*;
 
+@SpringBootTest
+@AutoConfigureMockMvc
+@RunWith(SpringRunner.class)
 @DisplayName("Testa CargoService")
-public class CargoServiceTest extends ApplicationConfigTest {
+public class CargoServiceTest{
 
     @MockBean
     private UsuarioRepository userRepo;
