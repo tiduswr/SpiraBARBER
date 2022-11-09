@@ -1,17 +1,25 @@
 package spyrabarber.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 import spyrabarber.domain.Servico;
 import spyrabarber.domain.dto.ServicoDTO;
+import spyrabarber.domain.projections.SimpleServicoProjection;
 import spyrabarber.repository.ServicosRepository;
 import spyrabarber.service.util.FileUtil;
 import spyrabarber.web.exception.ImageManageException;
 import spyrabarber.web.exception.NotUniqueNameException;
 import spyrabarber.web.exception.ServicoHasDependencyException;
 import spyrabarber.web.exception.ServicoNotFoundException;
+
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -24,12 +32,12 @@ public class ServicosService {
     @Autowired
     private ServicosRepository servicosRepository;
 
-    private final String IMAGE_FOLDER = "servicos";
-
     @Autowired
     private FileUtil fileUtil;
 
     private String encryptImagesMessageDigestType = "MD5";
+    private final String IMAGE_FOLDER = "servicos";
+    private final Pageable autoCompletePageable = PageRequest.of(0,8, Sort.by("nome").descending());
 
     public String getEncryptImagesMessageDigestType() {
         return encryptImagesMessageDigestType;
@@ -129,5 +137,17 @@ public class ServicosService {
         if(!s.getUsers().isEmpty()) throw new ServicoHasDependencyException("Esse serviço possui dependencias");
 
         servicosRepository.delete(s);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Servico> getServicosByUserID(Long id) throws ResponseStatusException{
+        List<Servico> list = servicosRepository.getServicosByUserId(id);
+        if(list == null || list.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Resultado não encontrado ou vazio");
+        return list;
+    }
+
+    @Transactional(readOnly = true)
+    public List<SimpleServicoProjection> getSimpleServicoProjectionByKeyword(String keyword) {
+        return servicosRepository.getSimpleServicoProjectionByKeyword(keyword, autoCompletePageable).getContent();
     }
 }

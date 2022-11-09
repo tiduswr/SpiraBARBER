@@ -111,5 +111,4 @@ public class UsuarioService implements UserDetailsService {
             throw new HasServicosException("Esse perfil possui serviços vinculados, tente remove-los antes de excluir");
         }
     }
-
 }

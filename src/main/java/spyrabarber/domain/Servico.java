@@ -1,5 +1,6 @@
 package spyrabarber.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.format.annotation.NumberFormat;
 import spyrabarber.domain.dto.ServicoDTO;
 
@@ -35,6 +36,7 @@ public class Servico extends AbstractEntity{
     @Column(name = "image_name", nullable = false)
     private String imageName;
 
+    @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_has_servico",

@@ -30,6 +30,7 @@ public class SecurityConfig {
             .antMatchers("/css/**", "/js/**","/images/**").permitAll()
             .antMatchers("/", "/home").permitAll()
             .antMatchers("/users/**").hasAuthority("ADMIN")
+            //.antMatchers("/api/barbers").hasAuthority("BARBEIRO")
             //Mapeando Login
             .and()
                 .formLogin()
